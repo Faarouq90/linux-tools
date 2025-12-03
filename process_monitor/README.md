@@ -24,9 +24,10 @@
 
 ---
 
-## Installation
+## Installation and Application
 Place the script anywhere and make it executable
 To manually run, use ./process_monitor.sh
+Edit Variable '$LOGFILE' to suited Log destination 
 
 
 
