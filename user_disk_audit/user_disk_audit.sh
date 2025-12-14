@@ -30,5 +30,31 @@ perform_user_audit(){
 	done < /etc/passwd
 }
 
+perform_disk_audit() {
+	printf '\n\n==== DISK AUDIT ====\n\n'
+	printf '%-16s %-20s %-16s\n' "FILESYSTEM" "MountPoint" "Usage"
+	printf '%s\n' "---------------------------------------------------"
+	
+	df -P | awk 'NR>1 {printf "%-16s %-20s %-16s\n", $1, $6, $5 }'
+
+	printf 'High Usage Filesystems (>=%s): \n' "$DISK_THRESHOLD"
+	found=0
+	while IFS=' ' read -r filesystem per_used mountpoint; do
+		usep=${per_used%\%}	
+		if [ "$usep" -ge "$DISK_THRESHOLD" ]; then
+			printf '\t- %s on %s (=%s) \n' "$filesystem" "$mountpoint" "$per_used"
+			found=1
+		fi
+	done< <(df -P | awk 'NR>1 {printf $1, $5, $6}')
+
+	if [ "$found" -eq 0 ]; then
+		printf '\t\n\n -No Filesystem surpasses the Threshold'
+	fi
+}
+
 #----------------------------------- MAIN ----------------------
+printf '%s\n' "============================================================="
+printf 'Timestamp: %s\n\n' "$TIMESTAMP"
 perform_user_audit
+perform_disk_audit
+printf '\n\n%s\n' "============================================================="
