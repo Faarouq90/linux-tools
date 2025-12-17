@@ -69,3 +69,9 @@ Make the script executable:
 ```bash
 chmod +x permission_audit.sh
 
+Run the audit: 
+
+```bash
+./permission_audit.sh
+
+
