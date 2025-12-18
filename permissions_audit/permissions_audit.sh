@@ -30,5 +30,34 @@ audit_world_writable_files(){
 	fi
 }
 
+
+
+#Edit or add critical files along with their required file permissions if needed
+
+audit_critical_file_permissions(){
+	printf 'Critical File Permissions\n'
+	file="/etc/shadow"
+	perm_requirement=600
+
+	if [ ! -f "$file" ]; then
+		printf 'File (%s) does not exist\n' "$file"
+		return
+	fi
+
+	file_perm=$(stat -c %a "$file")
+
+
+	if [ "$file_perm" != "$perm_requirement" ]; then
+
+		printf '\t-%s FAIL (%s)\n' "$file" "$file_perm"
+	else
+		printf '\t-%s OK (%s)\n' "$file" "$file_perm"
+	fi
+}
+
+
+
 audit_world_writable_dir
 audit_world_writable_files
+audit_critical_file_permissions
+
