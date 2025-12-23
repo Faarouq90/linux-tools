@@ -16,7 +16,7 @@ probe_root_login(){
 
 
 	if [ -z "$value" ]; then
-		printf '\n WARNING!!! Unable to retrieve root login permission. \n'
+		printf 'WARN Unable to retrieve root login permission. \n'
 		return
 	fi
 
@@ -26,12 +26,12 @@ probe_root_login(){
 			printf 'PermitRootLogin:\t Fail (%s)\n' "$value"
 			return 1
 			;;
-		no)
+		no|prohibit-password)
 			printf 'PermitRootLogin:\t OK (%s)\n' "$value"
 			return 0
 			;;
 		*)
-			printf 'WARNING!!! Unrecognised value:\t (%s)\n' "$value"
+			printf 'PermitRootLogin:\t Unrecognised (%s)\n' "$value"
 			return 1
 			;;
 	esac
@@ -39,4 +39,33 @@ probe_root_login(){
 }
 
 
+probe_password_auth(){
+
+	value=$(grep -i '^[[:space:]]*PasswordAuthentication' "$CONFIG_FILE" \
+		| awk '{print $2}' \
+		| tail -n 1)
+
+
+	if [ -z "$value" ]; then
+		printf 'WARN Unable to retrieve Password Authentication permission. \n'
+		return
+	fi
+
+
+	case "$value" in
+		yes)
+			printf 'PasswordAuthentication:\t FAIL (%s)\n' "$value"
+			;;
+		no)
+			printf 'PasswordAuthentication:\t OK (%s)\n' "$value"
+			;;
+		*)
+			printf 'PasswordAuthentication:\t WARN!! Unrecognised value (%s)\n' "$value"
+			;;
+	esac
+
+}
+
+
 probe_root_login
+probe_password_auth
