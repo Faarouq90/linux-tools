@@ -31,7 +31,7 @@ probe_root_login(){
 			return 0
 			;;
 		*)
-			printf 'PermitRootLogin:\t Unrecognised (%s)\n' "$value"
+			printf 'PermitRootLogin:\t WARN Unrecognised value (%s)\n' "$value"
 			return 1
 			;;
 	esac
@@ -60,12 +60,41 @@ probe_password_auth(){
 			printf 'PasswordAuthentication:\t OK (%s)\n' "$value"
 			;;
 		*)
-			printf 'PasswordAuthentication:\t WARN!! Unrecognised value (%s)\n' "$value"
+			printf 'PasswordAuthentication:\t WARN Unrecognised value (%s)\n' "$value"
 			;;
 	esac
 
 }
 
 
+probe_max_auth_tries(){
+
+
+	value=$(grep -i '^[[:space:]]*MaxAuthTries' "$CONFIG_FILE" \
+                | awk '{print $2}' \
+                | tail -n 1)
+
+
+        if [ -z "$value" ]; then
+                printf 'WARN Unable to retrieve MaxAuthTries. \n'
+                return
+        fi
+
+
+        case "$value" in
+                1|2|3|4)
+                        printf 'MaxAuthTries:\t OK (%s)\n' "$value"
+                        ;;
+                5|6)
+                        printf 'MaxAuthTries:\t WARN (%s)\n' "$value"
+                        ;;
+                *)
+                        printf 'MaxAuthTries:\t FAIL Unrecognised value (%s)\n' "$value"
+                        ;;
+        esac
+
+}
+
 probe_root_login
 probe_password_auth
+probe_max_auth_tries
