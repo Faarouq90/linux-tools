@@ -17,4 +17,18 @@ list_active_services(){
 	fi
 }
 
+list_enabled_services(){
+	printf '\n\n\nEnabled Services: \n\n'
+	
+	enabled_services=$(systemctl list-units --type=service --state=running --no-legend --no-pager | awk '{print "\t- " $1}')
+	
+	if [ -z "$enabled_services" ]; then
+		printf 'None detected\n'
+		return 0
+	else
+		echo "$enabled_services"
+	fi
+}
+
 list_active_services
+list_enabled_services
