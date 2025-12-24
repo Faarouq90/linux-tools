@@ -20,15 +20,31 @@ list_active_services(){
 list_enabled_services(){
 	printf '\n\n\nEnabled Services: \n\n'
 	
-	enabled_services=$(systemctl list-units --type=service --state=running --no-legend --no-pager | awk '{print "\t- " $1}')
+	enabled_services=$(systemctl list-unit-files --type=service --state=running --no-legend --no-pager | awk '{print "\t- " $1}')
 	
 	if [ -z "$enabled_services" ]; then
-		printf 'None detected\n'
+		printf '\tNone detected\n'
 		return 0
 	else
 		echo "$enabled_services"
 	fi
 }
 
+
+list_listening_ports(){
+
+	printf '\n\n\nListening Ports\n'
+
+	listening_ports=$(ss -Htuln | awk '{print "\t- "$1 " " $5}')
+
+	if [ -z "$listening_ports" ]; then
+		printf '\tNone detected \n'
+	else
+		echo "$listening_ports"
+	fi
+
+}
+
 list_active_services
 list_enabled_services
+list_listening_ports
