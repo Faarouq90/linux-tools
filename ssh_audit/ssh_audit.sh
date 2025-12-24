@@ -5,7 +5,6 @@
 
 CONFIG_FILE="/etc/ssh/sshd_config"
 
-
 #-------------------- Functions --------------------
 
 probe_root_login(){
@@ -95,6 +94,66 @@ probe_max_auth_tries(){
 
 }
 
-probe_root_login
-probe_password_auth
-probe_max_auth_tries
+probe_login_grace_time(){
+
+	#To get LoginGraceTime value
+	raw_value=$(grep -i '^[[:space:]]*LoginGraceTime' "$CONFIG_FILE" \
+                | awk '{print $2}' \
+                | tail -n 1)
+
+
+	#To check if value exists
+        if [ -z "$raw_value" ]; then
+                printf 'LoginGraceTime:\tWARN Unable to retrieve LoginGraceTime \n'
+                return 1
+        fi
+
+	seconds=""
+	
+	case "$raw_value" in
+
+		*m)
+			new_value=${raw_value%m}
+
+			case "$new_value" in
+				1|2)
+					printf 'LoginGraceTime:\t WARN (%sm)\n' "$new_value"
+					return 0
+					;;
+				*)
+					printf 'LoginGraceTime:\t FAIL (%sm)\n' "$new_value"
+					return 1
+					;;
+			esac
+			;;
+			
+
+
+		[1-9]|[1-5][0-9]|60)
+			printf 'LoginGraceTime:\t OK (%s)\n' "$new_value"
+			return 0
+			;;
+		*)
+			printf 'LoginGraceTime:\t FAIL (%sm)\n' "$raw_value"
+			return 1
+			;;
+	esac
+
+
+
+}
+print_header(){
+	TIMESTAMP="$(date '+%F %T')"
+
+	printf '\n\n######### SSH CONFIGURATION AUDIT ########\n'
+	printf 'TIMESTAMP: %s\n\n' "$TIMESTAMP"
+}
+
+main(){
+	print_header
+	probe_root_login
+	probe_password_auth
+	probe_max_auth_tries
+	probe_login_grace_time
+}
+main
