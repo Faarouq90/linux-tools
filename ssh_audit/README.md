@@ -1,11 +1,11 @@
-# Lab 8 — SSH Configuration Audit (Audit-Only)
+# SSH Configuration Audit
 
 ## Overview
-This lab implements an **audit-only SSH configuration scanner** using Bash.  
+This tool implements an **audit-only SSH configuration scanner** using Bash.  
 The script inspects the SSH server configuration (`sshd_config`) and reports
 whether key security-related settings are configured safely.
 
-⚠️ **This lab does NOT modify any system configuration.**  
+**This tool does NOT modify any system configuration.**  
 It is read-only and safe to run on any Linux system.
 
 ---
@@ -27,13 +27,10 @@ The script checks the following SSH server settings:
 2. **PasswordAuthentication**
    - Checks if password-based SSH authentication is enabled
 
-3. **Protocol**
-   - Verifies the SSH protocol version in use
-
-4. **MaxAuthTries**
+3. **MaxAuthTries**
    - Evaluates how many failed login attempts are allowed per connection
 
-5. **LoginGraceTime**
+4. **LoginGraceTime**
    - Checks how long a client can remain connected before authenticating
 
 Each setting is classified as:
