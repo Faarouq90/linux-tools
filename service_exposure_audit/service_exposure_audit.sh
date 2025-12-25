@@ -45,6 +45,27 @@ list_listening_ports(){
 
 }
 
+detect_public_listeners() {
+    printf '\n\nPublic Exposure:\n\n'
+
+    
+    listeners=$(ss -Hln)
+
+    
+    public=$(printf '%s\n' "$listeners" \
+        | awk '{print $1, $4}' \
+        | awk '$2 ~ /^0\.0\.0\.0:/ || $2 ~ /^\[::\]:/ || $2 ~ /^:::/ {print}')
+
+    if [ -z "$public" ]; then
+        printf '\tNone detected\n'
+        return 0
+    fi
+
+    printf '%s\n' "$public" | awk '{printf "\tWARN: %s %s\n", $1, $2}'
+}
+
+
 list_active_services
 list_enabled_services
 list_listening_ports
+detect_public_listeners
